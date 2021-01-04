@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:realtime_chat_app/helpers/show_alert.dart';
+import 'package:realtime_chat_app/services/auth_service.dart';
 
 import 'package:realtime_chat_app/widgets/custom_input.dart';
 import 'package:realtime_chat_app/widgets/login_button.dart';
@@ -48,6 +51,7 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -67,8 +71,15 @@ class __FormState extends State<_Form> {
           ),
           LoginButton(
             text: 'Ingrese',
-            onPressed: (){
-              print('valores');
+            onPressed: authService.authenticating ? null : () async{
+              FocusScope.of(context).unfocus();
+              final loginOk = await authService.login(emailCtrl.text.trim(), passwordCtrl.text.trim());
+
+              if(loginOk){
+                Navigator.pushReplacementNamed(context, 'users');
+              }else{
+                showAlert(context, 'Login Incorrecto', 'Algo salio mal. Revise sus credenciales.');
+              }
             }
           ),
         ],
