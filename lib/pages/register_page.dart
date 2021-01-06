@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:realtime_chat_app/helpers/show_alert.dart';
 import 'package:realtime_chat_app/services/auth_service.dart';
+import 'package:realtime_chat_app/services/socket_service.dart';
 
 import 'package:realtime_chat_app/widgets/custom_input.dart';
 import 'package:realtime_chat_app/widgets/login_button.dart';
@@ -53,6 +54,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -82,6 +84,7 @@ class __FormState extends State<_Form> {
               final registrationResult = await authService.register(nameCtrl.text, emailCtrl.text.trim(), passwordCtrl.text.trim());
 
               if(registrationResult == true){
+                socketService.connect();
                 Navigator.pushReplacementNamed(context, 'users');
               }else{
                 showAlert(context, 'Registro Incorrecto', registrationResult);
